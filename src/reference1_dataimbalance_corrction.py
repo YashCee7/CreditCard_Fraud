@@ -145,7 +145,7 @@ def fit_and_evaluate(clf, X_train, y_train, X_test, y_test, plot_roc=False, plot
     else:
         # fallback: use predictions (discrete) - not ideal for ROC/AUC but avoid crash
         probs = y_pred
-
+,
     cm = confusion_matrix(y_test, y_pred)
     try:
         auc = roc_auc_score(y_test, probs)
