@@ -14,6 +14,7 @@ app.add_middleware(
 )
 
 model = joblib.load("../models/xgboost_model.pkl")
+print(model)
 
 @app.post("/predict")
 def predict(data: dict):

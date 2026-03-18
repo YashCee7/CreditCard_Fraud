@@ -107,22 +107,28 @@ async function scoreSingleRow(row) {
  * @param {number}   threshold — decision threshold (default 0.25)
  * @returns {object[]} result rows with id, amount, time, prob, isFraud, action
  */
-function scoreBatch(rawRows, threshold = 0.25) {
-  return rawRows.map((row, i) => {
+async function scoreBatch(rawRows, threshold = 0.25) {
+  const results = [];
+
+  for (let i = 0; i < rawRows.length; i++) {
+    const row = rawRows[i];
     const filled = fillMissingFeatures(row);
-    const prob   = scoreSingleRow(filled);
+
+    const prob = await scoreSingleRow(filled);
     const isFraud = prob > threshold;
 
-    return {
-      id:       row['Transaction_ID'] || ('TXN_' + String(i + 1).padStart(5, '0')),
-      amount:   typeof row['Amount'] === 'number' ? row['Amount'] : Math.random() * 300 + 5,
-      time:     typeof row['Time']   === 'number' ? row['Time']   : Math.random() * 172800,
-      prob:     parseFloat(prob.toFixed(4)),
+    results.push({
+      id: row['Transaction_ID'] || ('TXN_' + String(i + 1).padStart(5, '0')),
+      amount: typeof row['Amount'] === 'number' ? row['Amount'] : Math.random() * 300 + 5,
+      time: typeof row['Time'] === 'number' ? row['Time'] : Math.random() * 172800,
+      prob: parseFloat(prob.toFixed(4)),
       isFraud,
-      action:   'pending',
+      action: 'pending',
       rowIndex: i,
-    };
-  });
+    });
+  }
+
+  return results;
 }
 
 // ── DEMO DATA GENERATOR ─────────────────────────────────────────────────────

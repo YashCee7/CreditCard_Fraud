@@ -147,7 +147,7 @@ function processSingleCSV(file) {
   reader.readAsText(file);
 }
 
-function runSingleCheck() {
+async function runSingleCheck() {
   const amount = parseFloat(document.getElementById('input-amount').value);
   const time   = parseFloat(document.getElementById('input-time').value);
   const threshold = parseFloat(document.getElementById('single-threshold').value);
@@ -172,7 +172,7 @@ function runSingleCheck() {
     // Build feature row — merge file data with typed values
     const row = { ...(State.singleFileData || {}), Amount: amount, Time: time };
     const filled = fillMissingFeatures(row);
-    const prob   = scoreSingleRow(filled);
+    const prob   = await scoreSingleRow(filled);
     const isFraud = prob > threshold;
 
     renderSingleResult(prob, isFraud, threshold, amount);
@@ -324,7 +324,7 @@ function resetDropZone() {
   document.getElementById('validation-box').classList.add('hidden');
 }
 
-function runBulkAnalysis() {
+async function runBulkAnalysis() {
   if (!State.bulkRawData.length) {
     State.bulkRawData = generateDemoData(500);
     showToast('No file uploaded — using 500 demo transactions');
@@ -354,7 +354,7 @@ function runBulkAnalysis() {
 
   setTimeout(() => {
     hideLoading();
-    State.bulkResults = scoreBatch(State.bulkRawData, State.bulkThreshold);
+    State.bulkResults = await scoreBatch(State.bulkRawData, State.bulkThreshold);
 
     // Switch to results view
     document.getElementById('bulk-upload-step').classList.add('hidden');
