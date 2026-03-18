@@ -166,16 +166,16 @@ async function runSingleCheck() {
   const steps = [300, 700, 1100];
   steps.forEach((delay, i) => setTimeout(() => setLoadingStep(i), delay));
 
-  setTimeout(() => {
-    hideLoading();
+  setTimeout(async () => {
+  hideLoading();
 
-    // Build feature row — merge file data with typed values
-    const row = { ...(State.singleFileData || {}), Amount: amount, Time: time };
-    const filled = fillMissingFeatures(row);
-    const prob   = await scoreSingleRow(filled);
-    const isFraud = prob > threshold;
+  const row = { ...(State.singleFileData || {}), Amount: amount, Time: time };
+  const filled = fillMissingFeatures(row);
 
-    renderSingleResult(prob, isFraud, threshold, amount);
+  const prob = await scoreSingleRow(filled);
+  const isFraud = prob > threshold;
+
+  renderSingleResult(prob, isFraud, threshold, amount);
   }, 1450);
 }
 
@@ -352,16 +352,15 @@ async function runBulkAnalysis() {
     if (step >= 5) clearInterval(stepInterval);
   }, 280);
 
-  setTimeout(() => {
-    hideLoading();
-    State.bulkResults = await scoreBatch(State.bulkRawData, State.bulkThreshold);
+  setTimeout(async () => {
+  hideLoading();
 
-    // Switch to results view
-    document.getElementById('bulk-upload-step').classList.add('hidden');
-    document.getElementById('bulk-results-step').classList.remove('hidden');
+  State.bulkResults = await scoreBatch(State.bulkRawData, State.bulkThreshold);
 
-    renderBulkResults();
-    document.getElementById('bulk-results-step').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('bulk-upload-step').classList.add('hidden');
+  document.getElementById('bulk-results-step').classList.remove('hidden');
+
+  renderBulkResults();
   }, 1650);
 }
 
